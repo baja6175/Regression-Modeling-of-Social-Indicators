@@ -1,0 +1,318 @@
+---
+title: "ST362 Final project - Crime Data"
+author: "Diya Bajaj, Joel Huebner"
+date: "2025-07-28"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**DATA**
+```{r}
+R <- c(79.1,163.5,57.8,196.9,123.4,68.2,96.3,155.5,85.6,70.5,
+       167.4,84.9,51.1,66.4,79.8,94.6,53.9,92.9,75.0,122.5,
+       74.2,43.9,121.6,96.8,52.3,199.3,34.2,121.6,104.3,69.6,
+       37.3,75.4,107.2,92.3,65.3,127.2,83.1,56.6,82.6,115.1,
+       88.0,54.2,82.3,103.0,45.5,50.8,84.9)
+Age <- c(151,143,142,136,141,121,127,131,157,140,
+         124,134,128,135,152,142,143,135,130,125,
+         126,157,132,131,130,131,135,152,119,166,
+         140,125,147,126,123,150,177,133,149,145,
+         148,141,162,136,139,126,130)
+S <- c(1,0,1,0,0,0,1,1,1,0,
+       0,0,0,0,1,1,0,1,0,0,
+       0,1,0,0,0,0,0,0,0,1,
+       0,0,1,0,0,0,1,0,1,1,
+       0,0,1,0,1,0,0)
+Ed <- c(91,113,89,121,121,110,111,109,90,118,
+        105,108,113,117,87,88,110,104,116,108,
+        108,89,96,116,116,121,109,112,107,89,
+        93,109,104,118,102,100,NA,104,88,104,
+        122,109,99,121,88,104,121)
+Ex0 <- c(58,103,45,149,109,118,82,115,65,71,
+         121,75,67,62,NA,81,66,123,128,113,
+         74,47,87,78,63,160,69,82,166,58,
+         55,90,63,97,97,109,58,51,61,82,
+         72,56,75,95,46,106,90)
+Ex1 <- c(56,95,44,141,101,115,79,109,62,68,
+         116,71,60,61,53,77,63,115,128,105,
+         67,44,83,73,57,143,71,76,157,54,
+         54,81,64,97,87,98,56,47,54,74,
+         66,54,70,96,41,97,91)
+LF <- c(510,583,533,577,591,547,519,542,553,632,
+        580,595,624,595,530,497,537,537,536,567,
+        602,512,564,574,641,631,540,571,521,521,
+        535,586,560,542,526,531,638,599,515,560,
+        601,523,522,574,480,599,623)
+M <- c(950,1012,969,994,985,964,982,969,955,1029,
+       966,972,972,986,986,956,977,978,934,985,
+       NA,962,953,1038,984,1071,965,1018,938,973,
+       1045,964,972,990,948,964,974,1024,953,981,
+       998,968,996,1012,968,989,1049)
+N <- c(33,13,18,157,18,25,4,50,39,7,
+       101,47,28,22,30,33,10,31,51,78,
+       34,22,43,7,14,3,6,10,168,46,
+       6,97,23,18,113,9,24,7,36,96,
+       9,4,40,29,19,40,3)
+NW <- c(301,102,219,80,30,44,139,179,286,15,
+        106,59,10,46,72,321,6,170,24,94,
+        12,423,92,36,26,77,4,79,89,254,
+        20,82,95,21,76,24,349,40,165,126,
+        19,2,208,36,49,24,22)
+U1 <- c(108,96,94,102,91,84,97,79,81,100,
+        77,83,77,77,92,116,114,89,78,130,
+        102,97,83,142,70,102,80,103,92,NA,
+        135,105,76,102,124,87,76,99,86,88,
+        84,107,73,111,135,78,113)
+U2 <- c(41,36,33,39,20,29,38,35,28,24,
+        35,31,25,27,43,47,35,34,34,58,
+        33,34,32,42,21,41,22,28,36,26,
+        40,43,24,35,50,38,28,27,35,31,
+        20,37,27,37,53,25,40)
+W <- c(394,557,318,673,578,689,620,472,421,526,
+       657,580,507,529,405,427,487,631,627,626,
+       557,288,513,540,486,674,564,537,637,396,
+       453,617,462,589,572,559,382,425,395,488,
+       590,489,496,622,457,593,588)
+X <- c(261,194,250,167,174,126,168,206,239,174,
+       170,172,206,190,264,247,166,165,135,166,
+       195,276,227,176,196,152,139,215,154,237,
+       200,163,233,NA,158,153,254,225,251,228,
+       144,170,224,162,249,171,160)
+```
+
+```{r}
+#s indicator variable = 1 if southern state, 0 if not
+crime = data.frame(R, Age, S, Ed, Ex0, Ex1, LF, M, N, NW, U1, U2, W, X)
+head(crime)
+#note models will remove rows of data that include NA so we can clean data to get the data that will be used in the models automatically
+crime2 = na.omit(crime)
+head(crime2)
+#i think we might need to use crime2 for part a to be representative of models in b that will exclude rows with na
+```
+
+**a.) Exploratory data analysis (e.g., summary statistics, graphical displays of the data such as boxplots, and preliminary conclusions. No models are assumed in this section).
+**
+```{r}
+summary(crime2)
+
+sapply(crime2, sd)
+
+if(!require("corrgram")) {install.packages("corrgram", dependencies = TRUE)}
+library(corrgram)
+
+#correlation matrix
+a = corrgram(crime2, upper.panel=panel.cor)
+a
+#see Ex0 and Ex1 have strongest correlation with R and Ex0 and Ex1 have very strong correlation 0.99 with each other
+#correlations in order
+cor = sort(a, decreasing = TRUE)
+cor
+upper_cor = cor[-(1:14)]
+upper_cor = upper_cor[seq(1, length(crime$R), 2)]
+upper_cor
+
+#distrubution of crime rate
+hist(crime2$R, main = "crime rate R distribution")
+
+for (var in names(crime2)){
+  Outlier = boxplot(crime2[[var]])$out
+  if (length(Outlier) == 0){
+    cat("No potentail outliers in", var, "\n")
+  } else {
+    cat("potential outliers in", var, crime2[[var]][which(crime2[[var]] %in% Outlier)], "\n")
+  }
+}
+```
+```{r}
+boxplot(crime2$Age)
+boxplot(crime2$Ex0)
+boxplot(crime2$NW)
+```
+
+**b.) Confirmatory data analysis (e.g., model selection, model diagnostics, justifications of models, and interpretations of results).**
+```{r}
+#general linear model
+model = lm(R~Age+S+Ed+Ex0+Ex1+LF+M+N+NW+U1+U2+W+X, crime)
+summary(model)
+#x=>Age=>U2 most significant, Ed sig at 0.10 level
+#R^2 of 77.9% with adjusted R^2 of 67.64$
+plot(model)
+#does not seem to be outliers based on cooks distance
+#residuals vs fitted seems to make double bow pattern indiacting non linear pattern
+#qqplot values follow line in middle but fall off in the tails
+#scale location seems to make nonlinear pattern in the line of fit
+```
+
+```{r}
+#model with significant factors based on pvalues
+model2 <- lm(R ~ Age + U2 + X + Ed, data = crime)
+summary(model2)
+#worse r^2 and adjr^2
+```
+
+```{r}
+# Stepwise regression (both directions)
+#backward
+full_model <- lm(R ~ Age + S + Ed + Ex0 + Ex1 + LF + M + N + NW + U1 + U2 + W + X, data = crime)
+step_model <- step(full_model, direction = "both")
+summary(step_model)
+#from backward elimination best model uses age,ed,exo,m,u1,u2,x with r^2adj 0.7133 which is better than full model
+model3 = lm(R~Age + Ed + Ex0 + M + U1 + U2 + X, data = crime)
+summary(model3)
+plot(model3)
+#residuals vs fitted still looks double bow
+#tail residuals still dont fit line
+#non linear scale location pattern
+#no cooks distance outliers
+
+#forward
+empty_model = lm(R~1, crime2)
+step_for = step(empty_model, scope = formula(full_model), direction = "forward")
+summary(step_for)
+#from forward elimination best model uses Ex0,Age,X,Ed,U2,W,LF
+model11 = lm(formula = R ~ Ex0 + Age + X + Ed + U2 + W + LF, data = crime2)
+summary(model11)
+plot(model11)
+
+```
+
+```{r}
+
+#since general models do not assume model assumptions, try box cox transofrmation
+library(MASS)
+bc = boxcox(model, lambda = seq(-2, 2, by = 0.1))
+optimal_lambda = bc$x[which.max(bc$y)]
+print(paste("optimal lambda:", optimal_lambda))
+#since lambda = 0.26 closer to 0.5, try square root transofrmation
+```
+
+```{r}
+crime$sqrtR = sqrt(crime$R)
+hist(crime$sqrtR)
+model4 = lm(sqrtR~Age+S+Ed+Ex0+Ex1+LF+M+N+NW+U1+U2+W+X, crime)
+summary(model4)
+plot(model4)
+#adjusted R^2 = 66.93 
+#still double bow
+#qq residuals fit better on upper tail
+#non linear scale
+#no residuals
+```
+
+```{r}
+model5 = lm(sqrtR~Age + Ed + Ex0 + M + U1 + U2 + X, crime)
+summary(model5)
+#adjusted R^2 = 69.99 better
+plot(model5)
+#doule bow
+#residuals fit line fairly well
+#non linear scale
+#no residuals
+```
+
+```{r}
+#boxcox trans
+crime$boxR = (crime$R^optimal_lambda-1)/optimal_lambda
+hist(crime$boxR)
+model6 = lm(boxR~Age+S+Ed+Ex0+Ex1+LF+M+N+NW+U1+U2+W+X, crime)
+summary(model6)
+plot(model6)
+#R^2 adjusted 66.01%
+```
+
+```{r}
+model7 = lm(boxR~Age + Ed + Ex0 + M + U1 + U2 + X, crime)
+summary(model7)
+plot(model7)
+#R^2 adjusted 68.7%
+```
+
+```{r}
+#potential outliers
+cooksD <- cooks.distance(model)
+which(cooksD > 1)
+
+if(!require("car")) {install.packages("car", dependencies = TRUE)}
+library(car)
+print(vif(model))
+
+vifval<- vif(model)
+barplot(vifval, main = "VIF values for all the predictor variables",
+        ylab = "VIF", 
+        xlab = "Predictors",
+        col = "gray", 
+        las = 2, 
+        cex.names = 0.8)
+abline(h = 10, col = "black", lty = 2)
+abline(h = 5, col = "blue", lty = 2)
+#multicolinearity between ex0 and Ex1 based on vif values
+#note multicolinearity between Exo and ex1 and potentially other varaibles, havent learned how to deal with it so #just note in the report
+```
+
+```{r}
+
+#try interactions to fix model not following assumptions, backwards selection using interaction terms
+model_start <- lm(sqrtR ~ (Age + Ed + Ex0 + M + U1 + U2 + X)^2, data = crime)
+model_step <- step(model_start, direction = "both")
+summary(model_step)
+```
+
+
+```{r}
+#best model found with interaction terms and imporves R^2 adjusted
+model9 = lm(sqrtR ~ Age + Ed + Ex0 + M + U1 + U2 + X + Age:Ed + 
+              Age:M + Age:U1 + Age:X + Ed:Ex0 + Ed:U1 + Ed:U2 + Ed:X + 
+              Ex0:M + Ex0:U1 + Ex0:U2 + Ex0:X + M:U2 + M:X + U1:U2 + U1:X + 
+              U2:X, data = crime)
+summary(model9)
+#R^2adjuted = 85.63%
+plot(model9)
+#residuals appear scattered around 0
+#qq residuals fit line better especiallu in bottom tail
+#scale location appears more ranodm
+# no outliers based on cooks, but improved model and better staisfys assumptions
+
+#forward selection
+crime2$sqrtR = sqrt(crime2$R)
+model_start2 = lm(sqrtR ~ (Age+ Ed+Ex0+ LF+ U2+ W+ X)^2, crime2)
+empty = lm(sqrtR~1, crime2)
+step_for = step(empty, scope = formula(model_start2), direction = "forward")
+summary(step_for)
+#Adjusted R-squared:  0.8013 
+model17 = lm(sqrtR ~ Ex0 + Age + X + Ed + U2 + W + Ex0:Age + 
+    Ex0:X + Ex0:U2 + Age:X + Age:W, data = crime2)
+summary(model17)
+plot(model17)
+
+```
+
+```{r}
+#one way anova
+aov1 <- aov(R ~ S, data = crime)
+summary(aov1)
+#H0: mean crime rate is the same for south and non south states, Ha: mean crime rate is not the same
+#since p value =0.545 > 0.05 we can not reject H0 at 0.05 signifiance level
+boxplot(R~S, crime,  main = "Crime Rate by Region", xlab = "Region: 1=South, 0 = Not south)", ylab = "Crime Rate")
+
+#transform rate into binary to use logistic regression
+#create y binary variable "High rate" if R is > median 
+crime$High <- ifelse(crime$R > median(crime$R, na.rm = TRUE), 1, 0)
+logit_model <- glm(High ~ Age + S + Ed + Ex0 + Ex1 + LF + M + N + NW + U1 + U2 + W + X,
+                   data = crime,
+                   family = binomial(link = "logit"))
+summary(logit_model)
+#null deviance 58.129 on 41df, residual deviance 26.173 on 28df
+pvalue = 1-pchisq(logit_model$deviance, logit_model$df.residual)
+pvalue
+#since p value = 0.56 > 0.05 we can say there is no significant evidence that the model does not fit well, thus model appears to be adequate
+exp(coef(logit_model))
+#interpretation of coefficients is for a unit increase in xi, there is a (1-Bi)*100% increase in R holding other xi's constant
+
+```
+
